@@ -1,8 +1,14 @@
 # TaskFlow - Full-Stack Task Management and Collaboration Platform
 
-TaskFlow is a full-stack task management and collaboration platform that allows authenticated users to create projects, manage tasks, track progress, add comments, and upload task attachments.
+TaskFlow is a full-stack task management and collaboration platform designed
+to provide a practical Trello-like workflow for managing projects and tasks.
 
-The application is built using React, Node.js, Express.js, and PostgreSQL, with JWT-based authentication and a RESTful backend API.
+It supports authenticated users, project organization, task tracking,
+comments, file attachments, search, filtering, pagination, and a RESTful
+backend API.
+
+The application is built with React, Node.js, Express.js, and PostgreSQL.
+JWT is used for authentication and bcrypt is used for secure password hashing.
 
 ## Live Demo
 
@@ -12,65 +18,52 @@ https://taskflow-frontend-mqli.onrender.com
 Backend:
 https://taskflow-backend-8sc7.onrender.com
 
-## Features
+## Key Features
 
 - User registration and login
 - JWT-based authentication
-- Secure password hashing using bcrypt
-- Protected API routes
-- User-specific tasks and projects
-- Create and manage projects
-- Create tasks with descriptions
-- Task priorities
-- Task due dates
+- Secure password hashing with bcrypt
+- Protected backend routes
+- User-specific projects and tasks
+- Project creation and management
+- Task creation with title and description
+- Task priority and due dates
 - Mark tasks as completed
-- Undo completed tasks
-- Search tasks
+- Undo task completion
+- Search tasks by text
 - Filter tasks by priority
-- Filter tasks by status
-- Pagination
-- Add comments to tasks
-- Upload file attachments to tasks
+- Filter tasks by completion status
+- Pagination for task lists
+- Comments on tasks
+- File attachments on tasks
 - PostgreSQL relational database
 - RESTful API architecture
 - Responsive web interface
-- Frontend and backend deployed separately
+- Separate frontend and backend deployment
 
 ## Screenshots
 
+Add screenshots of the application in the sections below.
+
 ### Login
 
-<!-- Upload your login screenshot to the repository and replace the path below -->
-
-![Login Screenshot](screenshots/login.png)
-
+[Add Login Screenshot Here]
 
 ### Register
 
-<!-- Upload your register screenshot to the repository and replace the path below -->
-
-![Register Screenshot](screenshots/register.png)
-
+[Add Register Screenshot Here]
 
 ### Dashboard
 
-<!-- Upload your dashboard screenshot to the repository and replace the path below -->
-
-![Dashboard Screenshot](screenshots/dashboard.png)
-
+[Add Dashboard Screenshot Here]
 
 ### Project Tasks
 
-<!-- Upload your project/task screenshot to the repository and replace the path below -->
-
-![Project Tasks Screenshot](screenshots/project-tasks.png)
-
+[Add Project Tasks Screenshot Here]
 
 ### Comments and Attachments
 
-<!-- Upload your comments and attachments screenshot to the repository and replace the path below -->
-
-![Comments and Attachments Screenshot](screenshots/comments-attachments.png)
+[Add Comments and Attachments Screenshot Here]
 
 ## Technology Stack
 
@@ -96,57 +89,85 @@ https://taskflow-backend-8sc7.onrender.com
 
 - PostgreSQL
 
-### Deployment
+### Deployment and Version Control
 
 - Render
 - GitHub
 
 ## Project Architecture
 
-The project is divided into two main parts:
+The application is separated into frontend and backend services.
 
-
-TaskFlow/
-|
-+-- backend/
-|   |
-|   +-- middleware/
-|   |   +-- authMiddleware.js
-|   |
-|   +-- routes/
-|   |   +-- auth.js
-|   |   +-- tasks.js
-|   |   +-- projects.js
-|   |   +-- comments.js
-|   |   +-- attachments.js
-|   |
-|   +-- uploads/
-|   +-- db.js
-|   +-- server.js
-|   +-- package.json
-|
-+-- frontend/
+    TaskFlow/
     |
-    +-- src/
+    +-- backend/
     |   |
-    |   +-- components/
-    |   |   +-- Navbar.jsx
+    |   +-- middleware/
+    |   |   +-- authMiddleware.js
     |   |
-    |   +-- pages/
-    |   |   +-- Dashboard.jsx
-    |   |   +-- Login.jsx
-    |   |   +-- Register.jsx
+    |   +-- routes/
+    |   |   +-- auth.js
+    |   |   +-- tasks.js
+    |   |   +-- projects.js
+    |   |   +-- comments.js
+    |   |   +-- attachments.js
     |   |
-    |   +-- services/
-    |       +-- api.js
+    |   +-- uploads/
+    |   +-- db.js
+    |   +-- server.js
+    |   +-- package.json
     |
-    +-- package.json
+    +-- frontend/
+        |
+        +-- src/
+        |   |
+        |   +-- components/
+        |   |   +-- Navbar.jsx
+        |   |
+        |   +-- pages/
+        |   |   +-- Dashboard.jsx
+        |   |   +-- Login.jsx
+        |   |   +-- Register.jsx
+        |   |
+        |   +-- services/
+        |       +-- api.js
+        |
+        +-- package.json
 
-Database Design
+## System Architecture
+
+    +-------------------+
+    |    User Browser   |
+    +---------+---------+
+              |
+              | HTTP / REST API
+              v
+    +-------------------+
+    | React Frontend    |
+    | Vite              |
+    +---------+---------+
+              |
+              | Axios
+              v
+    +-------------------+
+    | Node.js + Express |
+    | REST API          |
+    +---------+---------+
+              |
+              | SQL
+              v
+    +-------------------+
+    | PostgreSQL        |
+    | Relational DB     |
+    +-------------------+
+
+The frontend and backend are deployed as separate services on Render.
+
+## Database Design
 
 TaskFlow uses PostgreSQL as its relational database.
 
-The main tables are:
+Main relationships:
 
     users
       |
@@ -158,209 +179,201 @@ The main tables are:
             |
             +-- attachments
 
-Users
+### Users
 
 Stores registered user accounts.
 
 Main fields:
 
--   id
--   name
--   email
--   password
--   created_at
+- id
+- name
+- email
+- password
+- created_at
 
-Passwords are never stored as plain text. They are hashed using bcrypt.
+Passwords are stored as bcrypt hashes rather than plain text.
 
-Projects
+### Projects
 
 Stores projects created by users.
 
 Main fields:
 
--   id
--   name
--   description
--   user_id
--   created_at
+- id
+- name
+- description
+- user_id
+- created_at
 
-Tasks
+### Tasks
 
 Stores tasks belonging to users and optionally associated with projects.
 
 Main fields:
 
--   id
--   title
--   description
--   completed
--   priority
--   due_date
--   project_id
--   user_id
+- id
+- title
+- description
+- completed
+- priority
+- due_date
+- project_id
+- user_id
 
-Comments
+### Comments
 
 Stores comments associated with tasks.
 
 Main fields:
 
--   id
--   content
--   user_id
--   task_id
--   created_at
+- id
+- content
+- user_id
+- task_id
+- created_at
 
-Attachments
+### Attachments
 
 Stores information about files uploaded to tasks.
 
 Main fields:
 
--   id
--   filename
--   filepath
--   task_id
--   user_id
--   uploaded_at
+- id
+- filename
+- filepath
+- task_id
+- user_id
+- uploaded_at
 
-Authentication Flow
+## Authentication Flow
 
-TaskFlow uses JWT for authentication.
+TaskFlow uses JWT-based authentication.
 
-The authentication process works as follows:
+    1. User registers
+           |
+           v
+    2. Backend validates request
+           |
+           v
+    3. Password is hashed using bcrypt
+           |
+           v
+    4. User is stored in PostgreSQL
+           |
+           v
+    5. User logs in
+           |
+           v
+    6. Backend verifies password
+           |
+           v
+    7. JWT token is generated
+           |
+           v
+    8. Frontend stores token
+           |
+           v
+    9. Token is sent with protected API requests
 
-    User
-     |
-     | Register
-     v
-    Backend
-     |
-     | Hash password using bcrypt
-     v
-    PostgreSQL
-     |
-     | Store user
-     v
-    User
-     |
-     | Login
-     v
-    Backend
-     |
-     | Verify password
-     v
-    JWT Token
-     |
-     | Store token
-     v
-    Frontend
-     |
-     | Send token with API requests
-     v
-    Protected Backend Routes
-
-Protected requests include the JWT token in the Authorization header.
-
-Example:
+Protected requests use the Authorization header:
 
     Authorization: Bearer <JWT_TOKEN>
 
-API Overview
+## API Overview
 
-Authentication
+### Authentication
 
     POST /auth/register
     POST /auth/login
 
-Tasks
+### Tasks
 
     GET    /tasks
     POST   /tasks
     PUT    /tasks/:id
     DELETE /tasks/:id
 
-Projects
+### Projects
 
     GET    /projects
     POST   /projects
     DELETE /projects/:id
 
-Comments
+### Comments
 
     GET  /comments/:taskId
     POST /comments/:taskId
 
-Attachments
+### Attachments
 
     GET  /attachments/:taskId
     POST /attachments/:taskId
 
-The API uses parameterized SQL queries when communicating with
+The backend uses parameterized SQL queries when communicating with
 PostgreSQL.
 
-Task Management
+## Task Management
 
 Each task can contain:
 
--   Title
--   Description
--   Priority
--   Due date
--   Completion status
--   Project association
--   Comments
--   File attachments
+- Title
+- Description
+- Priority
+- Due date
+- Completion status
+- Project association
+- Comments
+- File attachments
 
-Tasks can be searched and filtered based on their properties.
+Users can create tasks, update their status, search and filter tasks,
+mark tasks as completed, and undo completion.
 
-Users can also mark tasks as completed and undo the completion.
+## Search, Filtering, and Pagination
 
-Search and Filtering
-
-The dashboard provides task search and filtering functionality.
+The dashboard provides tools for managing larger task lists.
 
 Users can:
 
--   Search tasks by text
--   Filter by priority
--   Filter by completion status
--   Navigate through multiple pages of tasks
+- Search tasks by text
+- Filter tasks by priority
+- Filter tasks by completion status
+- Navigate through multiple pages
 
-This keeps the interface usable when the number of tasks increases.
+This reduces clutter and keeps the task dashboard usable as the number of
+tasks grows.
 
-File Uploads
+## File Uploads
 
-TaskFlow supports uploading files to individual tasks.
+TaskFlow supports attaching files to individual tasks.
 
-Uploaded files are associated with:
+Each attachment is associated with:
 
--   The task
--   The user
--   The stored filename
--   The file path
--   Upload timestamp
+- The task
+- The user
+- The stored filename
+- The file path
+- The upload timestamp
 
-Security
+Multer is used on the backend to process file uploads.
 
-The project implements several basic security practices:
+## Security
 
--   Password hashing with bcrypt
--   JWT authentication
--   Protected backend routes
--   User-specific resource access
--   Parameterized PostgreSQL queries
--   Environment variables for database credentials
--   Environment variables for JWT secrets
--   .env excluded from Git using .gitignore
+The project includes several basic security practices:
 
-Sensitive configuration values are not stored directly in the source
-code.
+- Password hashing with bcrypt
+- JWT authentication
+- Protected backend routes
+- User-specific resource access
+- Parameterized PostgreSQL queries
+- Environment variables for database credentials
+- Environment variables for JWT secrets
+- .env excluded from Git using .gitignore
 
-Environment Variables
+Sensitive configuration values are not hard-coded into the source code.
 
-The backend uses environment variables for database and authentication
-configuration.
+## Environment Variables
+
+Backend configuration uses environment variables.
 
 Example:
 
@@ -371,20 +384,20 @@ Example:
     DB_PORT=5432
     JWT_SECRET=your_jwt_secret
 
-The actual credentials should never be committed to GitHub.
-
-For the frontend, the backend API URL is configured using:
+Frontend API configuration:
 
     VITE_API_URL=your_backend_url
 
-Running the Project Locally
+Never commit real credentials or secrets to GitHub.
 
-1. Clone the repository
+## Running Locally
+
+### 1. Clone the repository
 
     git clone https://github.com/Ruthwik-3556/TaskFlow.git
     cd TaskFlow
 
-2. Start the backend
+### 2. Start the backend
 
     cd backend
     npm install
@@ -394,7 +407,7 @@ The backend runs on:
 
     http://localhost:5000
 
-3. Start the frontend
+### 3. Start the frontend
 
 Open another terminal:
 
@@ -405,10 +418,9 @@ Open another terminal:
 The frontend will be available at the local Vite development URL shown
 in the terminal.
 
-PostgreSQL Setup
+## PostgreSQL Setup
 
-Create a PostgreSQL database and configure the backend environment
-variables.
+Create a PostgreSQL database and configure the backend environment variables.
 
 Create the required tables:
 
@@ -456,94 +468,85 @@ Create the required tables:
         uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
-Deployment
+## Deployment
 
 The application is deployed using Render.
 
-Deployment architecture:
+Deployment flow:
 
-                      +----------------------+
-                      |      User Browser    |
-                      +----------+-----------+
-                                 |
-                                 v
-                      +----------------------+
-                      |   React Frontend     |
-                      |       Render         |
-                      +----------+-----------+
-                                 |
-                             REST API
-                                 |
-                                 v
-                      +----------------------+
-                      | Node.js + Express    |
-                      |       Render         |
-                      +----------+-----------+
-                                 |
-                                 v
-                      +----------------------+
-                      | PostgreSQL Database  |
-                      |       Render         |
-                      +----------------------+
+    User Browser
+          |
+          v
+    React Frontend
+          |
+          | REST API
+          v
+    Node.js + Express Backend
+          |
+          | SQL
+          v
+    PostgreSQL Database
 
 The frontend and backend are deployed as separate Render services, while
 PostgreSQL is hosted using Render PostgreSQL.
 
-Git and Version Control
+## Git and Version Control
 
 Git and GitHub are used for source code management.
 
-The repository contains separate frontend and backend applications:
+Repository:
 
-    https://github.com/Ruthwik-3556/TaskFlow
+https://github.com/Ruthwik-3556/TaskFlow
 
-Environment files and other sensitive configuration are excluded using
-.gitignore.
+The repository contains separate frontend and backend applications.
 
-What I Learned
+Environment files and sensitive configuration are excluded using .gitignore.
 
-This project helped me understand:
+## What I Learned
 
--   Full-stack application development
--   React frontend development
--   Node.js and Express backend development
--   REST API design
--   PostgreSQL database design
--   SQL queries and relational database relationships
--   JWT authentication
--   Password hashing with bcrypt
--   Middleware in Express
--   File uploads
--   API communication using Axios
--   Search and pagination
--   Git and GitHub
--   Environment variables
--   Production deployment
--   Connecting a deployed backend to a production database
--   Deploying a React application
+This project helped me gain practical experience in:
 
-Future Improvements
+- Full-stack application development
+- React frontend development
+- Node.js and Express backend development
+- REST API design
+- PostgreSQL database design
+- SQL queries and relational database relationships
+- JWT authentication
+- Password hashing with bcrypt
+- Express middleware
+- File uploads with Multer
+- API communication using Axios
+- Search, filtering, and pagination
+- Git and GitHub
+- Environment variables
+- Production deployment
+- Connecting a deployed backend to a production database
+- Deploying a React application
 
-Possible future improvements include:
+## Future Improvements
 
--   Task editing
--   Team member invitations
--   Role-based project permissions
--   Email notifications
--   Real-time task updates
--   Drag-and-drop task boards
--   Activity history
--   Advanced project analytics
+Possible improvements include:
 
-Author
+- Task editing
+- Team member invitations
+- Role-based project permissions
+- Email notifications
+- Real-time task updates
+- Drag-and-drop task boards
+- Activity history
+- Advanced project analytics
+
+## Author
 
 Ruthwik Chetan Naik
 
-B.Tech Computer Science and Engineering Indian Institute of Technology
-Dharwad
+B.Tech Computer Science and Engineering
+Indian Institute of Technology Dharwad
 
-GitHub: https://github.com/Ruthwik-3556
+GitHub:
+https://github.com/Ruthwik-3556/TaskFlow
 
-License
+## License
 
 This project is created for educational and portfolio purposes.
