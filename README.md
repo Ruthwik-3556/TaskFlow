@@ -61,7 +61,7 @@ Add screenshots of the application in the sections below.
 ![Dashboard Screenshot](screenshots/dashpage2.png)
 
 ### Comments and Attachments
-![attachment and comments ](screenshots/checkcomments.png)
+![attachment and comments ](screenshots/comments2.png)
 
 ### project status
 ![status Screenshot](screenshots/completedproject.png)
