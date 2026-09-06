@@ -47,7 +47,10 @@ Add screenshots of the application in the sections below.
 
 ### Login
 
-[Add Login Screenshot Here]
+<!-- Upload your login screenshot to the repository and replace the path below -->
+
+![Login Screenshot](screenshots/loginpage.png)
+
 
 ### Register
 
