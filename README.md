@@ -54,19 +54,17 @@ Add screenshots of the application in the sections below.
 
 ### Register
 
-[Add Register Screenshot Here]
+![Register Screenshot](screenshots/registerpage.png)
 
 ### Dashboard
 
-[Add Dashboard Screenshot Here]
-
-### Project Tasks
-
-[Add Project Tasks Screenshot Here]
+![Dashboard Screenshot](screenshots/dashboardpage.png)
 
 ### Comments and Attachments
+![attachment and comments ](screenshots/checkcomments.png)
 
-[Add Comments and Attachments Screenshot Here]
+### project marking
+![marking Screenshot](screenshots/"completed project.png")
 
 ## Technology Stack
 
