@@ -270,3 +270,696 @@ User table creation
 importantly, your password is not returned in the response.
 
 And your database should contain a bcrypt hash for that user's password.
+
+Next feature: User Registration API
+
+We already created the users table and bcrypt password hashing.
+
+Now we need an API that allows a user to create an account.
+
+The flow will be:
+
+Postman
+   |
+   | POST /auth/register
+   | name, email, password
+   v
+Express
+   |
+   | hash password with bcrypt
+   v
+PostgreSQL
+   |
+   | INSERT user
+   v
+Express
+   |
+   | JSON response
+   v
+Postman
+
+The important part is:
+
+User password
+      |
+      v
+bcrypt.hash()
+      |
+      v
+hashed password
+      |
+      v
+PostgreSQL
+
+We never store the original password.
+
+Create the authentication route:
+
+backend
+   |
+   +-- routes
+       +-- tasks.js
+       +-- auth.js
+
+auth.js will contain the registration and login APIs.
+
+Registration endpoint:
+
+POST /auth/register
+
+The request body contains:
+
+{
+    "name": "Ruthwik",
+    "email": "user@email.com",
+    "password": "MyPassword123"
+}
+
+The backend receives the password, hashes it, and stores the hash
+in PostgreSQL.
+
+The response should contain safe user information and should NOT
+return the password.
+
+Registration is now connected:
+
+Postman
+   |
+   | POST /auth/register
+   v
+Express
+   |
+   | bcrypt.hash()
+   v
+PostgreSQL
+   |
+   | user stored
+   v
+Response
+
+Next feature: User Login
+
+Registration creates the account, but we now need to let the user log in.
+
+The flow is:
+
+User
+   |
+   | email + password
+   v
+POST /auth/login
+   |
+   v
+Express
+   |
+   | find user by email
+   v
+PostgreSQL
+   |
+   | stored bcrypt hash
+   v
+bcrypt.compare()
+   |
+   | password matches
+   v
+Login successful
+
+The important difference is:
+
+Registration:
+password -> bcrypt.hash() -> database
+
+Login:
+password + database hash -> bcrypt.compare() -> success/failure
+
+We do NOT decrypt the password.
+
+bcrypt hashes are compared using bcrypt.compare().
+
+If the password is incorrect, the backend returns an error instead
+of allowing the user to log in.
+
+Next feature: JWT authentication
+
+JWT means JSON Web Token.
+
+Instead of simply saying "the user logged in", the server gives
+the user a token.
+
+The flow becomes:
+
+User logs in
+    |
+    v
+Express verifies password
+    |
+    v
+JWT generated
+    |
+    v
+Token sent to frontend
+    |
+    v
+Frontend stores token
+    |
+    v
+Token sent with protected requests
+
+Example:
+
+Authorization: Bearer <JWT_TOKEN>
+
+The JWT contains information that allows the backend to identify
+the authenticated user.
+
+The important idea is:
+
+Login
+   |
+   v
+JWT token
+   |
+   v
+Future API requests
+   |
+   v
+Backend identifies user
+
+Now we need middleware to verify the token.
+
+Create:
+
+backend
+   |
+   +-- middleware
+       +-- authMiddleware.js
+
+The middleware's job is:
+
+Request
+   |
+   v
+authMiddleware
+   |
+   +-- Is token present?
+   |
+   +-- Is token valid?
+   |
+   v
+Continue to route
+
+If the token is missing or invalid:
+
+Request
+   |
+   v
+authMiddleware
+   |
+   v
+401 Unauthorized
+
+This allows us to protect routes.
+
+Before authentication:
+
+GET /tasks
+    |
+    v
+all accessible tasks
+
+After authentication:
+
+GET /tasks
+    |
+    v
+JWT
+    |
+    v
+authenticated user
+    |
+    v
+only that user's tasks
+
+This is an important security change.
+
+We now connect the authenticated user's ID to the task queries.
+
+For example:
+
+SELECT * FROM tasks
+WHERE user_id = $1
+
+The $1 value comes from the authenticated user's ID.
+
+So now:
+
+User A logs in
+    |
+    v
+JWT contains User A identity
+    |
+    v
+GET /tasks
+    |
+    v
+WHERE user_id = User A
+    |
+    v
+User A's tasks
+
+User B logs in
+    |
+    v
+GET /tasks
+    |
+    v
+WHERE user_id = User B
+    |
+    v
+User B's tasks
+
+This prevents users from simply requesting another user's tasks.
+
+The same ownership check should be applied to task updates and
+deletions.
+
+For example:
+
+PUT /tasks/3
+
+should not update task 3 just because the task ID exists.
+
+The backend should verify that task 3 belongs to the authenticated
+user.
+
+The security flow is:
+
+JWT
+ |
+ v
+Identify user
+ |
+ v
+Check resource ownership
+ |
+ v
+Allow or reject operation
+
+Now the backend has:
+
+User registration
+User login
+Password hashing
+JWT authentication
+Authentication middleware
+User-specific tasks
+Protected task routes
+
+Next feature: Projects
+
+The application currently organizes tasks at the user level.
+
+We now want users to create projects and associate tasks with projects.
+
+The database relationship becomes:
+
+User
+ |
+ +-- Projects
+       |
+       +-- Tasks
+
+A project will contain:
+
+id
+name
+description
+user_id
+created_at
+
+The project API will provide:
+
+GET    /projects
+POST   /projects
+DELETE /projects/:id
+
+The flow for creating a project is:
+
+Frontend/Postman
+      |
+      | POST /projects
+      v
+JWT authentication
+      |
+      v
+Express
+      |
+      | INSERT project
+      v
+PostgreSQL
+      |
+      v
+Project created
+
+When a task is created, it can optionally contain a project_id.
+
+So the relationship becomes:
+
+Project
+   |
+   +-- Task 1
+   +-- Task 2
+   +-- Task 3
+
+This gives TaskFlow a basic project-based organization system.
+
+Next feature: Connect React frontend
+
+Until now, most of the API testing was done using Postman.
+
+Now we need a real user interface.
+
+The frontend will be built using React and Vite.
+
+The architecture becomes:
+
+React
+   |
+   | Axios
+   v
+Express REST API
+   |
+   v
+PostgreSQL
+
+The frontend will contain pages such as:
+
+frontend
+   |
+   +-- src
+       |
+       +-- components
+       |   +-- Navbar.jsx
+       |
+       +-- pages
+       |   +-- Login.jsx
+       |   +-- Register.jsx
+       |   +-- Dashboard.jsx
+       |
+       +-- services
+           +-- api.js
+
+The api.js file will be responsible for communicating with
+the backend API.
+
+Instead of using Postman:
+
+User
+   |
+   v
+React UI
+   |
+   v
+Axios
+   |
+   v
+Express API
+   |
+   v
+PostgreSQL
+
+Now TaskFlow becomes a complete full-stack application.
+
+Next feature: Task comments
+
+Tasks already support the main task information.
+
+Now we can add comments to individual tasks.
+
+The relationship becomes:
+
+Task
+ |
+ +-- Comment 1
+ +-- Comment 2
+ +-- Comment 3
+
+The comments table stores:
+
+id
+content
+user_id
+task_id
+created_at
+
+API:
+
+GET  /comments/:taskId
+POST /comments/:taskId
+
+The flow is:
+
+User
+   |
+   | write comment
+   v
+React
+   |
+   | POST /comments/:taskId
+   v
+Express
+   |
+   v
+PostgreSQL
+   |
+   v
+Comment stored
+   |
+   v
+React displays comment
+
+The user ID from authentication is stored with the comment.
+
+Next feature: File attachments
+
+Tasks can now have comments.
+
+The next step is allowing users to attach files to tasks.
+
+The flow is:
+
+User selects file
+      |
+      v
+React
+      |
+      | multipart/form-data
+      v
+Express
+      |
+      v
+Multer
+      |
+      +---- saves uploaded file
+      |
+      v
+PostgreSQL
+      |
+      | stores file information
+      v
+Task attachment
+
+The database stores information such as:
+
+filename
+filepath
+task_id
+user_id
+uploaded_at
+
+The actual file and its database record serve different purposes.
+
+The file is stored by the backend, while PostgreSQL stores information
+about that file and which task it belongs to.
+
+API:
+
+GET  /attachments/:taskId
+POST /attachments/:taskId
+
+Next feature: Search and filtering
+
+As the number of tasks increases, displaying every task at once
+becomes inconvenient.
+
+We can add search and filtering to the dashboard.
+
+Users can search tasks by text.
+
+For example:
+
+Search:
+"PostgreSQL"
+
+The dashboard displays matching tasks.
+
+We can also filter by priority:
+
+All
+High
+Medium
+Low
+
+And by status:
+
+All
+Completed
+Incomplete
+
+The flow becomes:
+
+User enters search/filter
+        |
+        v
+React state changes
+        |
+        v
+Task list is filtered
+        |
+        v
+Matching tasks displayed
+
+Next feature: Pagination
+
+If a user has many tasks, loading every task at once is inefficient.
+
+Pagination divides the results into smaller pages.
+
+For example:
+
+Page 1:
+Tasks 1 - 10
+
+Page 2:
+Tasks 11 - 20
+
+Page 3:
+Tasks 21 - 30
+
+The dashboard can then provide:
+
+Previous
+1
+2
+3
+Next
+
+This makes the task list easier to use as the amount of data grows.
+
+At this point TaskFlow contains:
+
+User registration
+User login
+bcrypt password hashing
+JWT authentication
+Protected routes
+User-specific tasks
+Projects
+Task CRUD
+Comments
+File attachments
+Search
+Filtering
+Pagination
+
+The overall architecture is now:
+
+                    User
+                     |
+                     v
+              React Frontend
+                     |
+                   Axios
+                     |
+                     v
+              Express REST API
+                     |
+          +----------+----------+
+          |          |          |
+          v          v          v
+       Auth       Projects    Tasks
+          |                     |
+          |                     +-- Comments
+          |                     |
+          |                     +-- Attachments
+          |
+          v
+      JWT Auth
+                     |
+                     v
+                PostgreSQL
+
+Next step: Production deployment
+
+Everything currently works locally.
+
+Local development:
+
+React
+   |
+   v
+localhost
+   |
+   v
+Express
+   |
+   v
+PostgreSQL
+
+Now we need to make the application accessible online.
+
+The production architecture will be:
+
+User Browser
+      |
+      v
+React Frontend
+      |
+      | REST API
+      v
+Node.js + Express
+      |
+      v
+PostgreSQL
+
+The frontend and backend can be deployed as separate services.
+
+We also need to move configuration values into environment variables.
+
+For example:
+
+JWT_SECRET
+DB_HOST
+DB_USER
+DB_PASSWORD
+DB_NAME
+DB_PORT
+
+These values should not be hard-coded into the source code.
+
+Before deployment:
+
+Local development
+       |
+       v
+Environment variables
+       |
+       v
+Production configuration
+       |
+       v
+Deployed application
+
+Deployment will be the final major step in making TaskFlow a
+portfolio-ready full-stack project.
+
