@@ -63,8 +63,8 @@ Add screenshots of the application in the sections below.
 ### Comments and Attachments
 ![attachment and comments ](screenshots/checkcomments.png)
 
-### project marking
-![marking Screenshot](screenshots/"completed project.png")
+### project status
+![status Screenshot](screenshots/completedproject.png)
 
 ## Technology Stack
 
