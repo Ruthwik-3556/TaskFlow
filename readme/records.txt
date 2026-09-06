@@ -1,0 +1,272 @@
+http://localhost:5000
+
+is your backend server.
+
+http://localhost:5000/tasks
+
+my first API endpoint.
+
+thinking:
+Browser
+   │
+   │ GET /tasks
+   ▼
+Express server
+   │
+   │ finds /tasks
+   ▼
+Returns JSON
+JSON is simply a convenient way for programs to exchange data.
+
+Our progression will be:
+
+Hard-coded tasks
+       ↓
+API
+       ↓
+Database
+       ↓
+Create tasks
+       ↓
+Update tasks
+       ↓
+Delete tasks
+       ↓
+User accounts
+       ↓
+JWT authentication
+       ↓
+Projects
+       ↓
+Comments
+       ↓
+File uploads
+       ↓
+Search/filtering
+       ↓
+Deployment...
+
+Create a task with POST
+What is Postman?
+
+Postman is simply a program that lets us talk to and test our backend API.
+
+So you've now successfully done both:
+
+GET /tasks  → get tasks
+POST /tasks → create a tasks
+
+What actually happened?
+
+When you clicked Send, Postman sent this to your backend:
+POSTMAN
+   │
+   │ "Create Learn Express"
+   ▼
+YOUR EXPRESS SERVER             Your Express server received it here:
+
+req.body.title
+   │
+   │ creates task
+   ▼
+YOUR SERVER                 Then your backend sent the result back to Postman.
+   │
+   │ sends JSON response
+   ▼
+POSTMAN
+
+The task only exists temporarily inside the request:
+
+Postman
+   ↓
+Express
+   ↓
+Response
+
+We don't have a database yet.
+We'll change:
+
+Postman
+   ↓
+Express
+   ↓
+temporary data
+
+into:
+
+Postman / React
+       ↓
+   Express API
+       ↓
+   PostgreSQL
+       ↓
+   tasks stored permanently...
+✅ Node.js installed
+✅ Express installed
+✅ Backend server running
+✅ GET API working
+✅ POST API working
+⏭️ Database next
+
+Once we add PostgreSQL, we'll start replacing the hard-coded tasks with real persistent data.
+
+Now we're going to make the important change: instead of returning the fake tasks we wrote inside server.js, we'll make /tasks fetch the tasks from PostgreSQL.
+
+Why this is a big step
+
+Previously, those tasks were written directly in JavaScript.
+
+Now the process is:
+
+Browser
+   ↓
+GET /tasks
+   ↓
+Express
+   ↓
+pool.query("SELECT * FROM tasks")
+   ↓
+PostgreSQL
+   ↓
+3 rows
+   ↓
+Express
+   ↓
+Browser
+
+res.json(result.rows);
+
+sends those rows back to your browser as JSON.
+
+Postman
+   │
+   │ POST /tasks
+   │ { "title": "Learn Express" }
+   ↓
+Express
+   ↓
+PostgreSQL
+   ↓
+INSERT INTO tasks
+   ↓
+Task permanently stored
+
+You should now see 4 tasks, including:
+
+Learn Express
+
+This proves that:
+
+Postman → API → PostgreSQL → API → Browser
+
+is working.
+$1 → "Learn Express"
+
+This is called a parameterized query. It's the proper way to send values to SQL instead of directly joining user input into the SQL string.
+
+✅ Node.js
+✅ Express
+✅ REST API
+✅ GET /tasks
+✅ POST /tasks
+✅ PostgreSQL
+✅ Database connection
+✅ SQL queries
+
+And you actually built it yourself step-by-step.
+
+Next feature: UPDATE a task
+
+Our API currently can:
+
+GET    /tasks       → get tasks
+POST   /tasks       → create task
+
+Now we'll add:
+
+PUT    /tasks/:id   → update task
+
+refresh:
+
+http://localhost:5000/tasks
+
+You should now see only:
+
+1  Learn Node.js
+2  Learn PostgreSQL
+3  Build TaskFlow
+
+If task 4 disappears, CRUD is officially complete:
+
+POST    → Create ✅
+GET     → Read   ✅
+PUT     → Update ✅
+DELETE  → Delete ✅
+
+db.js - This file's only job is:
+
+Connect our application to PostgreSQL.
+
+Move the task API into tasks.js
+
+We now have a proper backend foundation:
+
+TaskFlow
+└── backend
+    ├── routes
+    │   └── tasks.js
+    ├── db.js
+    ├── server.js
+    ├── package.json
+    └── package-lock.json
+
+Right now anyone using our API can access all tasks:
+
+GET /tasks
+      ↓
+all tasks
+
+Eventually we want:
+
+User A logs in
+      ↓
+gets User A's tasks
+
+User B logs in
+      ↓
+gets User B's tasks
+
+So first we need a users table.
+
+What are we storing?
+
+Our table will look like:
+
+id	name	email	password	created_at
+1	Ruthwik	user@email.com	encrypted...	...
+
+Notice that the password column will not eventually contain the user's actual password.
+
+We'll use a library called bcrypt to hash passwords.
+User enters:
+MyPassword123
+
+Database stores:
+$2b$10$..............
+
+The response does NOT contain the password. 🔒
+
+now completed:
+
+Node.js setup
+Express setup
+PostgreSQL setup
+CRUD APIs
+Route separation
+Environment variables
+Password hashing with bcrypt
+User table creation
+
+importantly, your password is not returned in the response.
+
+And your database should contain a bcrypt hash for that user's password.
