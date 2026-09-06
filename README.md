@@ -58,7 +58,7 @@ Add screenshots of the application in the sections below.
 
 ### Dashboard
 
-![Dashboard Screenshot](screenshots/dashboardpage.png)
+![Dashboard Screenshot](screenshots/dashpage2.png)
 
 ### Comments and Attachments
 ![attachment and comments ](screenshots/checkcomments.png)
